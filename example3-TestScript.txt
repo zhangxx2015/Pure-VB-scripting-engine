@@ -1,0 +1,19 @@
+'主函数
+Sub Main(Args)
+	MsgBox "欢迎使用xScript!"
+	'创建公用对话框
+        Dim Dialog, FileName
+        Set Dialog = CreateObjectEx("MSComDlg.CommonDialog")
+	With Dialog
+		.InitDir = Host.Path
+		.Filter = "*.*"
+        	.DialogTitle = "请选择一个文件:"
+        	.ShowOpen
+        	FileName = .FileName
+	End With
+        Set Dialog = Nothing
+        MsgBox "你选择了:" & FileName & "文件!"
+End Sub
+
+
+

@@ -1,0 +1,40 @@
+
+Sub EventHandle(index,name,pCount,pNames(),pType(),pValues())
+	xVB.Caption = index & "," & name
+	If Name = "xVB_Resize" Then
+		WB.Width=xVB.ScaleWidth
+		WB.Height=xVB.ScaleHeight
+		If xVB.Width <> 9120 Then xVB.Width  = 9120
+		If xVB.Height<> 7200 Then xVB.Height = 7200
+	End If
+	'If name = "DocumentComplete" Then MsgBox "Complete!"
+	If name = "NavigateComplete2" Then
+'		MsgBox "Complete2!"
+'        	Dim Doc
+'        	Set Doc = WB.Document
+'On Error Resume Next
+'		MsgBox Doc.getElementById("kw").Value
+'        	Doc.getElementById("kw").Value = "abc"
+'		
+'		
+'	        Dim Frm
+'        	Set Frm = Doc.getElementById("f")
+'	        Frm.submit
+	End If
+End Sub
+
+Sub Main(Args)
+	'MsgBox "命令行参数为:" & Args
+        'Dim Dialog, FileName
+        'Set Dialog = CreateObjectEx("MSComDlg.CommonDialog")
+        'Dialog.DialogTitle = "请选择要浏览的网页文件:"
+        'Dialog.ShowOpen
+        'FileName = Dialog.FileName
+        'Set Dialog = Nothing
+        
+        Call xVB.CreateActiveX("WB","Shell.Explorer.2", True, 0, 0, xVB.ScaleWidth, xVB.ScaleHeight)
+        Call WB.Object.Navigate("http://www.baidu.com")
+End Sub
+
+
+

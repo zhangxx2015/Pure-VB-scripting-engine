@@ -1,0 +1,117 @@
+Dim Button1,HScroll1
+'毫秒格式转时分秒格式
+Function MS_To_HHMMSS(hs)
+	hs = hs / 1000
+	Dim HH, MM, SS
+	HH = hs \ 60 \ 60
+	MM = hs \ 60
+	SS = hs Mod 60
+	MS_To_HHMMSS = Right("00" & HH, 2) & ":" & Right("00" & MM, 2) & ":" & Right("00" & SS, 2)
+End Function
+
+'ActiveX控件回调
+Sub EventHandle(index,name,pCount,pNames(),pType(),pValues())
+	'xVB.Caption = index & "," & name
+
+	If index = -1 And name = "xVB_Resize" Then
+		With xVB
+			.Width = 9000
+			.Height = 7000
+		End With
+		Exit Sub
+	End If
+
+	If name = "StatusUpdate" Then
+		'更新播放状态
+		Select Case MCI.Object.Mode
+		Case 524
+			xVB.Caption = "设备没有打开"
+		Case 525
+			xVB.Caption = "停止"
+		Case 526
+			xVB.Caption = "正在播放"
+		Case 527
+			xVB.Caption = "正在录制"
+		Case 528
+			xVB.Caption = "正在搜索"
+		Case 529
+			xVB.Caption = "暂停"
+		Case 530
+			xVB.Caption = "设备准备好"
+		End Select
+		'显示播放时间
+		xVB.Caption = xVB.Caption + "[" & MS_To_HHMMSS(MCI.Object.Position) + "/" + MS_To_HHMMSS(MCI.Object.Length) + "]"
+		
+		'更新滚动条位置
+		HScroll1.Instance.Value = MCI.Object.Position / 1000
+	End If
+
+End Sub
+
+
+'主函数(入口)
+Sub Main(Args)
+	'MsgBox "命令行参数为:" & Args
+
+	'设置窗体样式
+	Call xVB.SetWindowStyle(2)
+	'创建VB默认控件
+	Set Button1 = xVB.CreateControl("VB.CommandButton")
+	With Button1.Instance
+		.Visible = True
+		.Top = 100
+		.Left = 100
+		.Width = 100
+		.Height = 100
+		.Caption = "播放视频"
+	End With
+	'事件绑定
+	Call Button1.AddHandles("Click","Button1_Click")
+End Sub
+
+
+
+
+Private Sub Button1_Click()
+	Dim Dialog, FileName
+	Set Dialog = CreateObjectEx("MSComDlg.CommonDialog")
+	Dialog.DialogTitle = "请选择要播放的视频文件:"
+	Dialog.Filter = "MPEG Video files(*.mpeg;*.mpg;*.mpe)|*.mpeg;*.mpg;*.mpe" + "|Video for Windows files(*.avi)|*.avi" + "|影像文件(*.WMV)|*.wmv"
+	Dialog.ShowOpen
+	FileName = Dialog.FileName
+	Set Dialog = Nothing
+	
+	'创建ActiveX控件
+	Call xVB.CreateActiveX("MCI","MCI.MMControl.1", True, 10, 355, xVB.ScaleWidth-20, 30)
+	With MCI.Object
+		.FileName = FileName
+		.hWndDisplay = xVB.hWnd
+		.Command = "Open"
+		'设置时间格式为毫秒
+    		.TimeFormat = 0
+		.Command = "Play"
+	End With
+	
+	'创建VB默认控件
+	Set HScroll1 = xVB.CreateControl("VB.HScrollBar")
+	With HScroll1.Instance
+		.Visible = True
+		.Top = 400
+		.Left = 10
+		.Width = xVB.ScaleWidth - 20
+		.Height = 30
+		.Max = MCI.Object.Length / 1000
+	End With
+	'事件绑定
+	Call HScroll1.AddHandles("Scroll","HScroll1_Scroll")
+End Sub
+
+'拖动视频快进快退
+Private Sub HScroll1_Scroll()
+	With MCI.Object
+		.Command = "pause"
+		.From = 1000.00 * HScroll1.Instance.Value
+		.Command = "play"
+	End With
+End Sub
+
