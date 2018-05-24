@@ -1,0 +1,6 @@
+FormMain = 128, 71, 820, 552, Z, 22, 22, 714, 503, C
+ClassEvent = 154, 154, 846, 635, 
+ClassDebug = 176, 176, 868, 657, 
+ModuleCommon = 198, 198, 932, 653, 
+ClassICommandButton = 66, 66, 800, 521, 
+ClassIHScrollBar = 154, 154, 888, 609, 
